@@ -31,3 +31,23 @@ nodeexporter:
         - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
     restart: always
 
+nginx-prometheus-exporter:
+    image: sophos/nginx-vts-exporter
+    extra_hosts:
+        - "dockerhost:172.17.0.1"
+    ports:
+        - "172.17.0.1:9092:9913"
+    environment:  
+        - NGINX_STATUS=http://172.17.0.1:8080/status
+    restart: always
+
+mysql-prometheus-exporter:
+    image: prom/mysqld-exporter
+    extra_hosts:
+        - "dockerhost:172.17.0.1"
+    ports:
+        - "172.17.0.1:9093:9104"
+    environment:
+        - DATA_SOURCE_NAME=username:password@(172.17.0.1:3306)/
+    restart: always
+

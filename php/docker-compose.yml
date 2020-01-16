@@ -1,0 +1,24 @@
+php:
+    build: php7-fpm
+    ports: 
+        - "127.0.0.1:9007:9000"
+    volumes:
+        - /var/www/vhost:/var/www/vhost
+        - /etc/nginx/cache:/etc/nginx/cache
+        - /var/www/owncloud:/var/www/owncloud
+    restart: always
+
+php72:
+    build: php72-fpm
+#    net: "host"
+    extra_hosts:
+        - "dockerhost:172.17.0.1"
+    ports:
+        - "127.0.0.1:9072:9000"
+    volumes:
+        - /var/www/vhost:/var/www/vhost
+        - /etc/nginx/cache:/etc/nginx/cache
+        - /var/www/owncloud:/var/www/owncloud
+    restart: always
+
+

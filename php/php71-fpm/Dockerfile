@@ -1,4 +1,4 @@
-FROM php:7.2-fpm
+FROM php:7.1-fpm
 
 # Get repository and install wget and vim
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -35,7 +35,7 @@ RUN apt-get update \
   && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
   && pecl install redis \
   && pecl install memcached \
-  && pecl install mcrypt-1.0.1 \
+  && pecl install mcrypt-1.0.0 \
   && docker-php-ext-install \
             iconv \
             mbstring \
@@ -60,22 +60,5 @@ RUN pecl install apcu \
     && docker-php-ext-enable apcu --ini-name 10-docker-php-ext-apcu.ini \
     && docker-php-ext-enable apc --ini-name 20-docker-php-ext-apc.ini
 
-# set recommended PHP.ini settings
-# see https://secure.php.net/manual/en/opcache.installation.php
-RUN { \
-		echo 'opcache.memory_consumption=128'; \
-		echo 'opcache.interned_strings_buffer=8'; \
-		echo 'opcache.max_accelerated_files=4000'; \
-		echo 'opcache.revalidate_freq=60'; \
-		echo 'opcache.fast_shutdown=1'; \
-		echo 'opcache.enable_cli=1'; \
-	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
-
-# add status page
-RUN echo 'pm.status_path = /php72_status\n' \
-	'php_flag[display_errors] = on\n'\
-	'php_admin_value[error_log] = /var/log/php72-fpm.log\n'\
-	'php_admin_flag[log_errors] = on'\
-	 >> /usr/local/etc/php-fpm.d/www.conf
 
 

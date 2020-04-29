@@ -1,0 +1,54 @@
+# A scrape configuration scraping a Node Exporter and the Prometheus server
+# itself.
+scrape_configs:
+  # Scrape Prometheus itself every 5 seconds.
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Scrape the Node Exporter every 5 seconds.
+  - job_name: 'node-exporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # Scrape the Nginx Exporter every 5 seconds.
+  - job_name: 'nginx'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['nginx-vts-exporter:9913']
+
+  # Scrape the MySQL Exporter every 5 seconds.
+  - job_name: 'mysql'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['mysql-exporter:9104']
+
+ # Scrape the PHP Exporter every 5 seconds.
+  - job_name: 'php5'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['php5-exporter:9253']
+
+ # Scrape the PHP Exporter every 5 seconds.
+  - job_name: 'php7'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['php72-exporter:9253']
+
+ # Scrape the Docker Exporter every 5 seconds.
+  - job_name: 'docker'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['172.17.0.1:9096']
+
+ # Scrape the CAdvisor Exporter every 5 seconds.
+  - job_name: 'cadvisor'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['cadvisor:8080']
+
+
+
+

@@ -1,5 +1,6 @@
 prometheus:
     image: prom/prometheus
+    container_name: prometheus
     user: root
 #    net: "host"
     extra_hosts:
@@ -11,19 +12,24 @@ prometheus:
         - ./data:/data/prometheus
     command:
         - --config.file=/etc/prometheus/prometheus.yml
+    links:
+        - "node-exporter"
+        - "nginx-vts-exporter"
+        - "mysql-exporter"
+        - "php5-exporter"
+        - "php72-exporter"
+        - "cadvisor"
     restart: always
 
-nodeexporter:
+
+node-exporter:
     image: prom/node-exporter
+    container_name: node-exporter
     user: root
     volumes: 
-        - /proc:/host/proc
-        - /sys:/host/sys
-        - /:/rootfs
-    extra_hosts:
-        - "dockerhost:172.17.0.1"
-    ports:
-        - "172.17.0.1:9091:9100"
+        - /proc:/host/proc:ro
+        - /sys:/host/sys:ro
+        - /:/rootfs:ro
     command:
         - '--path.procfs=/host/proc'
         - '--path.rootfs=/rootfs'
@@ -31,23 +37,51 @@ nodeexporter:
         - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
     restart: always
 
-nginx-prometheus-exporter:
+nginx-vts-exporter:
     image: sophos/nginx-vts-exporter
-    extra_hosts:
-        - "dockerhost:172.17.0.1"
-    ports:
-        - "172.17.0.1:9092:9913"
+    container_name: nginx-vts-exporter
     environment:  
         - NGINX_STATUS=http://172.17.0.1:8080/status
     restart: always
 
-mysql-prometheus-exporter:
+mysql-exporter:
     image: prom/mysqld-exporter
+    container_name: mysql-exporter
+    environment:
+        - DATA_SOURCE_NAME=exporter:MyExporterPrometheusPassword@(172.17.0.1:3306)/
+    command:
+        - '--collect.info_schema.tables'
+        - '--collect.binlog_size'
+        - '--collect.info_schema.tables.databases=*'
+    restart: always
+
+php5-exporter:
+    image: hipages/php-fpm_exporter
+    container_name: php5-exporter
+    volumes:
+        - /var/run/php5-fpm.sock:/var/run/php5-fpm.sock
+    environment:
+        - PHP_FPM_SCRAPE_URI="unix:///var/run/php5-fpm.sock;/php5_status"
+    restart: always
+
+php72-exporter:
+    image: hipages/php-fpm_exporter
+    container_name: php72-exporter
     extra_hosts:
         - "dockerhost:172.17.0.1"
-    ports:
-        - "172.17.0.1:9093:9104"
     environment:
-        - DATA_SOURCE_NAME=username:password@(172.17.0.1:3306)/
+         - PHP_FPM_SCRAPE_URI="tcp://172.17.0.1:9072/php72_status"
     restart: always
+
+cadvisor:
+    image: google/cadvisor
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    restart: always
+
 

@@ -1,0 +1,13 @@
+collabora:
+    image: collabora/code
+    container_name: collabora
+    ports:
+        - "127.0.0.1:9980:9980"
+    environment:
+        - domain=cloud.justowl.it
+        - extra_params=--o:ssl.enable=false --o:ssl.termination=true
+        - dictionaries=fr en de es
+    restart: always
+    cap_add:
+        - ALL
+
